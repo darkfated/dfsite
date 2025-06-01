@@ -22,8 +22,8 @@
 1. Клонировать репозиторий:
 
 ```
-git clone https://github.com/darkfated/darkfatedru.git
-cd darkfatedru
+git clone https://github.com/darkfated/dfsite.git
+cd dfsite
 ```
 
 2. Установить зависимости:
