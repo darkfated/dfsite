@@ -1,32 +1,46 @@
 <template>
     <div class="contact">
-        <section class="section contact-hero">
+        <section class="hero">
             <div class="container">
-                <h1 class="section-title">Ссылки</h1>
-                <p class="section-subtitle">Мои контакты и социальные сети</p>
+                <h1 class="title">Ссылки</h1>
+                <p class="subtitle">Мои контакты и социальные сети</p>
             </div>
         </section>
 
-        <section class="section links-section">
+        <section class="links">
             <div class="container">
                 <div class="links-grid">
-                    <a v-for="link in socialLinks" :key="link.id" :href="link.url" target="_blank"
-                        rel="noopener noreferrer" class="link-card glass-card" :class="{ 'copy-card': link.copyTag }"
-                        @click.prevent="handleLinkClick(link)">
-                        <div class="link-icon">
-                            <img v-if="link.icon" :src="require(`@/assets/svg/${link.icon}.svg`)" :alt="link.name"
-                                class="social-svg" />
-                        </div>
+                    <a v-for="link in socialLinks" :key="link.id" :href="link.url && !link.copyTag ? link.url : '#'"
+                        class="link-card glass" :class="{ 'is-copy': link.copyTag, copied: copiedLinks[link.id] }"
+                        @click.prevent="handleLinkClick(link)" role="button" :aria-label="link.name" tabindex="0"
+                        @keydown.enter.prevent="handleLinkClick(link)" @keydown.space.prevent="handleLinkClick(link)">
                         <div class="link-info">
                             <h3 class="link-title">{{ link.name }}</h3>
-                            <p class="link-url" v-if="!link.copyTag">{{ formatUrl(link.url) }}</p>
-                            <p class="link-url copy-text" v-else>{{ link.copyMessage || link.copyTag }}</p>
+                            <p class="link-meta" v-if="!link.copyTag">{{ formatUrl(link.url) }}</p>
+                            <p class="link-meta" v-else>
+                                <span class="copy-text" v-if="!copiedLinks[link.id]">{{ link.copyTag }}</span>
+                                <span class="copy-text copied-text" v-else>Скопировано!</span>
+                            </p>
                         </div>
-                        <div class="link-glow"></div>
+
+                        <div class="link-action">
+                            <button v-if="link.copyTag" class="btn-copy" @click.stop.prevent="copyToClipboard(link)"
+                                :aria-label="`Копировать ${link.copyTag}`">
+                                Копировать
+                            </button>
+
+                            <span v-else class="btn-open">Открыть</span>
+                        </div>
+
+                        <div class="link-glow" aria-hidden="true"></div>
                     </a>
                 </div>
             </div>
         </section>
+
+        <transition name="toast">
+            <div v-if="toast.show" class="toast">{{ toast.text }}</div>
+        </transition>
     </div>
 </template>
 
@@ -37,234 +51,325 @@ export default {
     name: 'ContactView',
     data() {
         return {
-            copiedLinks: {}
+            copiedLinks: {},
+            toast: { show: false, text: '' }
         }
     },
     computed: {
         ...mapGetters(['getSocialLinks']),
         socialLinks() {
-            return this.getSocialLinks.map(link => {
-                if (link.copyTag) {
-                    return {
-                        ...link,
-                        copyMessage: this.copiedLinks[link.id] ? 'Скопировано!' : link.copyTag
-                    }
-                }
-                return link
-            })
+            return this.getSocialLinks || []
         }
     },
     methods: {
         formatUrl(url) {
+            if (!url) return ''
             return url.replace(/^https?:\/\/(www\.)?/, '')
         },
         handleLinkClick(link) {
             if (link.copyTag) {
                 this.copyToClipboard(link)
-            } else if (link.url && link.url !== '#') {
-                window.open(link.url, '_blank')
+                return
+            }
+            if (link.url && link.url !== '#') {
+                window.open(link.url, '_blank', 'noopener,noreferrer')
             }
         },
         copyToClipboard(link) {
-            navigator.clipboard.writeText(link.copyTag)
-                .then(() => {
-                    this.copiedLinks = {
-                        ...this.copiedLinks,
-                        [link.id]: true
-                    }
-
-                    setTimeout(() => {
-                        this.copiedLinks = {
-                            ...this.copiedLinks,
-                            [link.id]: false
-                        }
-                    }, 2000)
-                })
-                .catch(err => {
-                    console.error('Не удалось скопировать текст: ', err)
-                })
+            const text = link.copyTag || link.url || ''
+            if (!text) return
+            navigator.clipboard.writeText(text).then(() => {
+                this.$set(this.copiedLinks, link.id, true)
+                this.showToast('Скопировано в буфер обмена')
+                setTimeout(() => {
+                    this.$set(this.copiedLinks, link.id, false)
+                }, 2000)
+            }).catch(() => {
+                this.showToast('Не удалось скопировать')
+            })
+        },
+        showToast(text) {
+            this.toast.text = text
+            this.toast.show = true
+            clearTimeout(this._toastTimer)
+            this._toastTimer = setTimeout(() => {
+                this.toast.show = false
+            }, 1800)
         }
+    },
+    beforeDestroy() {
+        clearTimeout(this._toastTimer)
     }
 }
 </script>
 
 <style scoped>
-.contact-hero {
-    background-color: var(--dark-bg);
-    text-align: center;
-    padding-bottom: 40px;
+:root {
+    --dark-bg: #0f1224;
+    --glass-border: rgba(255, 255, 255, 0.06);
+    --primary-color: #6f4bff;
+    --text-color: #dbe5ff;
+    --muted: #9aa7c7;
+    --glass-shadow: 0 10px 30px rgba(6, 7, 14, 0.6);
+    --glass-blur: 10px;
 }
 
-.links-section {
-    padding-top: 40px;
+.contact {
+    min-height: 100vh;
+    background: linear-gradient(180deg, rgba(12, 13, 20, 1) 0%, rgba(18, 19, 32, 1) 100%);
+    color: var(--text-color);
+    padding: 36px 16px;
+    font-family: Inter, "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 14px;
+}
+
+.title {
+    font-size: 2.1rem;
+    margin: 2px 0 6px;
+    color: var(--text-color);
+}
+
+.subtitle {
+    color: var(--muted);
+    margin: 0 0 18px;
+}
+
+.links {
+    padding-top: 12px;
+    padding-bottom: 40px;
 }
 
 .links-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 18px;
 }
 
 .link-card {
-    display: flex;
-    align-items: center;
-    padding: 30px;
-    transition: transform 0.3s, box-shadow 0.3s;
-    cursor: pointer;
-    overflow: hidden;
     position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px;
     border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s;
+    border: 1px solid var(--glass-border);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+    box-shadow: var(--glass-shadow);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    min-height: 72px;
+}
+
+.link-card:focus {
+    outline: none;
+    box-shadow: 0 12px 40px rgba(111, 75, 255, 0.12);
+    transform: translateY(-4px);
 }
 
 .link-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    border-color: var(--primary-color);
-}
-
-.link-glow {
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle at center, rgba(142, 68, 173, 0.1), transparent 50%);
-    transform: rotate(45deg);
-    opacity: 0;
-    transition: opacity 0.6s;
-    z-index: -1;
-}
-
-.link-card:hover .link-glow {
-    opacity: 1;
-}
-
-.copy-card {
-    position: relative;
-    overflow: hidden;
-}
-
-.copy-card::after {
-    content: 'Нажмите, чтобы скопировать';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background-color: var(--primary-color);
-    color: white;
-    font-size: 0.8rem;
-    padding: 5px 0;
-    text-align: center;
-    transform: translateY(100%);
-    transition: transform 0.3s;
-}
-
-.copy-card:hover::after {
-    transform: translateY(0);
-}
-
-.link-icon {
-    margin-right: 20px;
-    width: 50px;
-    text-align: center;
-    transition: transform 0.3s;
-    flex-shrink: 0;
-}
-
-.link-card:hover .link-icon {
-    transform: scale(1.2);
-}
-
-.social-svg {
-    width: 36px;
-    height: 36px;
-    filter: brightness(0) invert(1);
-    transition: filter 0.3s;
-}
-
-.link-card:hover .social-svg {
-    filter: brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(255deg);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 60px rgba(6, 7, 20, 0.6);
+    border-color: rgba(111, 75, 255, 0.18);
 }
 
 .link-info {
     flex: 1;
-    overflow: hidden;
+    min-width: 0;
 }
 
 .link-title {
+    margin: 0 0 4px;
     color: var(--primary-color);
-    margin: 0 0 5px;
-    font-size: 1.2rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.1;
 }
 
-.link-url {
+.link-meta {
     margin: 0;
-    color: var(--light-text);
+    color: var(--muted);
     font-size: 0.9rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-@media (max-width: 992px) {
+.link-action {
+    margin-left: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.btn-copy,
+.btn-open {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    color: var(--text-color);
+    padding: 8px 10px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.18s, transform 0.12s;
+}
+
+.btn-copy:hover,
+.btn-open:hover {
+    background: rgba(255, 255, 255, 0.02);
+    transform: translateY(-2px);
+}
+
+.btn-copy:active {
+    transform: translateY(0);
+}
+
+.is-copy::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(111, 75, 255, 0.04), rgba(124, 242, 214, 0.02));
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.18s;
+}
+
+.link-card.copied {
+    border-color: rgba(124, 242, 214, 0.18);
+}
+
+.link-card.copied .is-copy::after {
+    opacity: 1;
+}
+
+.link-glow {
+    position: absolute;
+    top: -40%;
+    left: -40%;
+    width: 180%;
+    height: 180%;
+    background: radial-gradient(circle at center, rgba(111, 75, 255, 0.08), transparent 40%);
+    transform: rotate(25deg);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 0;
+}
+
+.link-card:hover .link-glow {
+    opacity: 1;
+}
+
+.toast {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 28px;
+    background: rgba(20, 20, 30, 0.95);
+    color: var(--text-color);
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    box-shadow: 0 12px 36px rgba(6, 7, 20, 0.6);
+    z-index: 9999;
+}
+
+/* Адаптив: планшет */
+@media (max-width: 1000px) {
     .links-grid {
         grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     }
-}
 
-@media (max-width: 768px) {
-    .contact-hero {
-        padding-bottom: 30px;
-    }
-
-    .links-section {
-        padding-top: 30px;
-    }
-
-    .links-grid {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 20px;
+    .link-action {
+        margin-left: 12px;
     }
 
     .link-card {
-        padding: 20px;
+        padding: 16px;
+    }
+}
+
+/* Адаптив: мобильный */
+@media (max-width: 600px) {
+    .container {
+        padding: 0 10px;
     }
 
-    .social-svg {
-        width: 30px;
-        height: 30px;
+    .title {
+        font-size: 1.6rem;
+    }
+
+    .subtitle {
+        font-size: 0.95rem;
+        margin-bottom: 12px;
+    }
+
+    .links-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .link-card {
+        padding: 14px;
+        min-height: 68px;
+        align-items: flex-start;
+        gap: 10px;
     }
 
     .link-title {
-        font-size: 1.1rem;
+        font-size: 1rem;
     }
 
-    .link-url {
+    .link-meta {
+        font-size: 0.9rem;
+        white-space: normal;
+    }
+
+    .link-action {
+        margin-left: 8px;
+    }
+
+    .btn-copy,
+    .btn-open {
+        padding: 7px 9px;
         font-size: 0.85rem;
     }
 }
 
-@media (max-width: 480px) {
-    .links-grid {
-        grid-template-columns: 1fr;
+/* Маленькие экраны */
+@media (max-width: 380px) {
+    .title {
+        font-size: 1.45rem;
     }
 
-    .link-card {
-        padding: 15px;
+    .link-title {
+        font-size: 0.98rem;
     }
 
-    .link-icon {
-        width: 40px;
-        margin-right: 15px;
+    .btn-copy,
+    .btn-open {
+        padding: 6px 8px;
+        font-size: 0.82rem;
     }
+}
 
-    .social-svg {
-        width: 28px;
-        height: 28px;
-    }
+.toast-enter-active,
+.toast-leave-active {
+    transition: opacity 0.25s;
+}
 
-    .copy-card::after {
-        font-size: 0.7rem;
-    }
+.toast-enter,
+.toast-leave-to {
+    opacity: 0;
 }
 </style>

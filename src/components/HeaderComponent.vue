@@ -58,7 +58,6 @@ export default {
             navItems: [
                 { title: 'Главная', path: '/', icon: 'home' },
                 { title: 'Обо мне', path: '/about', icon: 'about' },
-                { title: 'Портфолио', path: '/portfolio', icon: 'portfolio' },
                 { title: 'Блог', path: '/blog', icon: 'blog' },
                 { title: 'Ссылки', path: '/contact', icon: 'contact' },
             ]

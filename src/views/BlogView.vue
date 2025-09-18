@@ -1,83 +1,76 @@
 <template>
     <div class="blog">
-        <section class="section blog-hero">
+        <section class="hero">
             <div class="container">
-                <h1 class="section-title">{{ currentPost ? currentPost.title : 'Блог' }}</h1>
-                <p v-if="!currentPost" class="section-subtitle">Мои заметки о программировании, играх и не только</p>
-                <p v-else class="section-subtitle">{{ formatDate(currentPost.date) }}</p>
+                <h1 class="title">{{ currentPost ? currentPost.title : 'Блог' }}</h1>
+                <p class="subtitle" v-if="!currentPost">Мои мысли :&gt;</p>
+                <p class="subtitle" v-else>{{ formatDate(currentPost.date) }}</p>
 
-                <div v-if="!currentPost" class="blog-search">
-                    <input type="text" v-model="searchQuery" placeholder="Поиск по блогу..." class="search-input">
+                <div v-if="!currentPost" class="search-wrap">
+                    <input v-model="searchQuery" class="search-input" type="text" placeholder="Поиск по блогу..." />
                 </div>
 
-                <div v-if="currentPost" class="blog-nav">
-                    <button @click="backToList" class="btn btn-back">
-                        <span class="back-icon">←</span> К списку блогов
-                    </button>
+                <div v-if="currentPost" class="post-nav">
+                    <button @click="backToList" class="btn-back">← К списку</button>
                 </div>
             </div>
         </section>
 
-        <section class="section blog-content">
-            <div class="container blog-container">
-                <!-- Страница со списком постов -->
-                <div v-if="!currentPost">
-                    <div v-if="filteredPosts.length > 0" class="blog-grid">
-                        <div v-for="post in filteredPosts" :key="post.slug" class="blog-card glass-card"
-                            @click="navigateToPost(post.slug)">
-                            <h2 class="blog-title">{{ post.title || 'Без названия' }}</h2>
-                            <p class="blog-description">{{ post.description || 'Нет описания' }}</p>
+        <section class="content">
+            <div class="container content-grid">
+                <transition-group name="cards" tag="div" class="cards-grid" v-if="!currentPost && !loading && !error">
+                    <article v-for="post in filteredPosts" :key="post.slug" class="card"
+                        @click="navigateToPost(post.slug)" role="button" tabindex="0"
+                        @keydown.enter.prevent="navigateToPost(post.slug)">
+                        <h2 class="card-title">{{ post.title || 'Без названия' }}</h2>
+                        <p class="card-desc">{{ post.description || 'Нет описания' }}</p>
 
-                            <div class="blog-meta">
-                                <div class="blog-date">{{ formatDate(post.date) }}</div>
-                                <div class="blog-tags" v-if="post.tags && post.tags.length">
-                                    <span v-for="(tag, idx) in post.tags.slice(0, 3)" :key="idx" class="blog-tag">
-                                        {{ tag }}
-                                    </span>
-                                </div>
+                        <div class="card-meta">
+                            <time class="date">{{ formatDate(post.date) }}</time>
+                            <div class="tags" v-if="post.tags && post.tags.length">
+                                <span v-for="(t, i) in post.tags.slice(0, 3)" :key="i" class="tag">{{ t }}</span>
                             </div>
-
-                            <button class="read-more btn btn-primary">Читать</button>
                         </div>
-                    </div>
 
-                    <div v-else class="no-posts glass-card">
-                        <div class="welcome-icon">📝</div>
-                        <h2>Блоги не найдены</h2>
-                        <p>В данный момент нет доступных блогов или ни один из них не соответствует поисковому запросу.
-                        </p>
-                    </div>
+                        <div class="card-actions">
+                            <button class="btn-read" @click.stop.prevent="navigateToPost(post.slug)">Читать</button>
+                        </div>
+                    </article>
+                </transition-group>
+
+                <div v-if="!currentPost && filteredPosts.length === 0 && !loading && !error" class="empty glass">
+                    <h3>Блоги не найдены</h3>
+                    <p>Нет доступных публикаций или ничего не подходит под запрос.</p>
                 </div>
 
-                <!-- Страница отдельного поста -->
-                <div v-else class="post-container">
-                    <div class="blog-post glass-card">
-                        <div v-if="currentPost.tags && currentPost.tags.length" class="post-tags">
-                            <span v-for="(tag, index) in currentPost.tags" :key="index" class="post-tag">
-                                {{ tag }}
-                            </span>
-                        </div>
-
-                        <div class="post-content markdown-body" v-html="currentPost.html"></div>
-
-                        <div class="post-footer">
-                            <button @click="backToList" class="btn btn-primary">
-                                <span class="back-icon">←</span> Назад к блогам
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div v-if="loading" class="loading-container">
-                    <div class="loading-spinner"></div>
+                <div v-if="loading" class="loading glass">
+                    <div class="spinner"></div>
                     <p>Загрузка...</p>
                 </div>
 
-                <div v-if="error" class="error-container glass-card">
-                    <h2>Ошибка</h2>
+                <div v-if="error" class="error glass">
+                    <h3>Ошибка</h3>
                     <p>{{ error }}</p>
-                    <button @click="backToList" class="btn btn-primary">К списку блогов</button>
+                    <button class="btn-back" @click="backToList">К списку</button>
                 </div>
+
+                <transition name="post">
+                    <article v-if="currentPost && !loading && !error" class="post glass">
+                        <div class="post-head">
+                            <div class="post-tags" v-if="currentPost.tags && currentPost.tags.length">
+                                <span v-for="(t, i) in currentPost.tags" :key="i" class="tag">{{ t }}</span>
+                            </div>
+                            <h2 class="post-title">{{ currentPost.title }}</h2>
+                            <div class="post-info">{{ formatDate(currentPost.date) }}</div>
+                        </div>
+
+                        <div class="post-body markdown-body" v-html="currentPost.html"></div>
+
+                        <div class="post-footer">
+                            <button class="btn-back" @click="backToList">← Назад</button>
+                        </div>
+                    </article>
+                </transition>
             </div>
         </section>
     </div>
@@ -95,7 +88,7 @@ export default {
             searchQuery: '',
             loading: false,
             error: null
-        }
+        };
     },
     computed: {
         slug() {
@@ -103,12 +96,11 @@ export default {
         },
         filteredPosts() {
             if (!this.searchQuery) return this.posts;
-
-            const query = this.searchQuery.toLowerCase();
-            return this.posts.filter(post =>
-                (post.title?.toLowerCase() || '').includes(query) ||
-                (post.description?.toLowerCase() || '').includes(query) ||
-                (post.tags || []).some(tag => tag.toLowerCase().includes(query))
+            const q = this.searchQuery.trim().toLowerCase();
+            return this.posts.filter(p =>
+                (p.title || '').toLowerCase().includes(q) ||
+                (p.description || '').toLowerCase().includes(q) ||
+                (p.tags || []).some(t => t.toLowerCase().includes(q))
             );
         }
     },
@@ -117,17 +109,16 @@ export default {
         async loadPosts() {
             this.loading = true;
             this.error = null;
-
             try {
-                this.posts = await getAllPosts();
+                this.posts = (await getAllPosts()) || [];
                 if (this.slug) {
                     await this.loadCurrentPost();
                 } else {
                     this.currentPost = null;
                 }
-            } catch (error) {
-                console.error('Ошибка при загрузке постов:', error);
-                this.error = 'Ошибка при загрузке данных. Пожалуйста, попробуйте позже.';
+            } catch (e) {
+                this.error = 'Ошибка при загрузке постов. Попробуйте позже.';
+                console.error(e);
             } finally {
                 this.loading = false;
             }
@@ -135,15 +126,14 @@ export default {
         async loadCurrentPost() {
             this.loading = true;
             this.error = null;
-
             try {
                 this.currentPost = await getPostBySlug(this.slug);
                 if (!this.currentPost) {
                     this.error = 'Пост не найден';
                 }
-            } catch (error) {
-                console.error('Ошибка при загрузке поста:', error);
+            } catch (e) {
                 this.error = 'Ошибка при загрузке поста';
+                console.error(e);
             } finally {
                 this.loading = false;
             }
@@ -167,194 +157,223 @@ export default {
     created() {
         this.loadPosts();
     }
-}
+};
 </script>
 
 <style scoped>
-.blog-hero {
-    background-color: var(--dark-bg);
-    text-align: center;
-    padding-bottom: 20px;
+:root {
+    --dark-bg: #0f1224;
+    --glass-border: rgba(255, 255, 255, 0.06);
+    --primary-color: #6f4bff;
+    --text-color: #dbe5ff;
+    --muted: #9aa7c7;
+    --glass-shadow: 0 10px 30px rgba(6, 7, 14, 0.6);
+    --glass-blur: 10px;
+    --card-gap: 18px;
 }
 
-.blog-container {
-    max-width: 1400px;
+.blog {
+    min-height: 100vh;
+    background: linear-gradient(180deg, rgba(12, 13, 20, 1) 0%, rgba(18, 19, 32, 1) 100%);
+    color: var(--text-color);
+    padding: 36px 16px;
+    font-family: Inter, "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-/* Поиск */
-.blog-search {
-    max-width: 600px;
-    margin: 20px auto 0;
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 14px;
+}
+
+.blog .container {
+    padding-left: 22px;
+    padding-right: 14px;
+}
+
+@media (max-width: 700px) {
+    .blog .container {
+        padding-left: 16px;
+        padding-right: 12px;
+    }
+}
+
+@media (max-width: 420px) {
+    .blog .container {
+        padding-left: 12px;
+        padding-right: 10px;
+    }
+}
+
+.title {
+    font-size: 2.1rem;
+    margin: 2px 0 6px;
+    color: var(--text-color);
+}
+
+.subtitle {
+    color: var(--muted);
+    margin-bottom: 12px;
+}
+
+.search-wrap {
+    max-width: 640px;
+    margin: 10px auto 0;
 }
 
 .search-input {
     width: 100%;
     padding: 12px 16px;
-    border-radius: 30px;
+    border-radius: 999px;
     border: 1px solid var(--glass-border);
-    background-color: rgba(0, 0, 0, 0.2);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.00));
     color: var(--text-color);
     font-size: 1rem;
-    transition: all 0.3s;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 18px rgba(7, 8, 15, 0.45);
+    transition: box-shadow 0.18s, border-color 0.18s;
 }
 
 .search-input:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 4px 20px rgba(142, 68, 173, 0.2);
+    box-shadow: 0 12px 36px rgba(111, 75, 255, 0.08);
 }
 
-.blog-nav {
-    margin: 15px 0 0;
+.content {
+    padding-top: 20px;
 }
 
-/* Список блогов */
-.blog-grid {
+.content-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 25px;
-    margin-bottom: 30px;
+    grid-template-columns: 1fr;
+    gap: var(--card-gap);
 }
 
-.blog-card {
-    padding: 25px;
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: var(--card-gap);
+    width: 100%;
+}
+
+.card {
+    padding: 20px;
     border-radius: 12px;
-    transition: all 0.3s ease;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    backdrop-filter: blur(var(--glass-blur));
     cursor: pointer;
     display: flex;
     flex-direction: column;
-    height: 100%;
+    min-height: 220px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s;
 }
 
-.blog-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-    border-color: var(--primary-color);
+.card:focus {
+    outline: none;
+    transform: translateY(-4px);
+    box-shadow: 0 18px 50px rgba(111, 75, 255, 0.08);
 }
 
-.blog-title {
-    font-size: 1.5rem;
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 60px rgba(6, 7, 20, 0.6);
+    border-color: rgba(111, 75, 255, 0.12);
+}
+
+.card-title {
+    margin: 0 0 10px;
     color: var(--primary-color);
-    margin: 0 0 15px;
+    font-size: 1.25rem;
+    line-height: 1.2;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-.blog-description {
-    color: var(--light-text);
-    margin-bottom: 20px;
+.card-desc {
+    color: var(--muted);
+    margin: 0 0 12px;
     flex-grow: 1;
-    line-height: 1.6;
+    line-height: 1.5;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-.blog-meta {
+.card-meta {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
     gap: 10px;
-}
-
-.blog-date {
-    font-size: 0.85rem;
-    color: var(--light-text);
-}
-
-.blog-tags {
-    display: flex;
-    gap: 5px;
+    margin-bottom: 12px;
     flex-wrap: wrap;
 }
 
-.blog-tag {
-    background-color: rgba(142, 68, 173, 0.15);
+.date {
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+.tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.tag {
+    background: rgba(111, 75, 255, 0.08);
     color: var(--primary-color);
-    font-size: 0.75rem;
-    padding: 3px 8px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    border: 1px solid rgba(111, 75, 255, 0.06);
+}
+
+.card-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn-read {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 8px 12px;
+    color: var(--text-color);
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.empty {
+    text-align: center;
+    padding: 40px;
     border-radius: 12px;
+    margin: 0 auto;
+    max-width: 640px;
 }
 
-.read-more {
-    align-self: flex-start;
-    margin-top: auto;
-}
-
-/* Отдельный пост */
-.post-container {
-    max-width: 900px;
+.loading,
+.error {
+    text-align: center;
+    padding: 28px;
+    border-radius: 12px;
+    max-width: 640px;
     margin: 0 auto;
 }
 
-.blog-post {
-    padding: 30px;
-    border-radius: 12px;
-    margin-bottom: 30px;
-}
-
-.post-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 25px;
-}
-
-.post-tag {
-    background-color: rgba(142, 68, 173, 0.15);
-    color: var(--primary-color);
-    font-size: 0.85rem;
-    padding: 5px 12px;
-    border-radius: 20px;
-    border: 1px solid rgba(142, 68, 173, 0.3);
-}
-
-.post-footer {
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid var(--glass-border);
-}
-
-.back-icon {
-    font-size: 1.2rem;
-}
-
-.btn-back {
-    background-color: transparent;
-    color: var(--primary-color);
-    border: 1px solid var(--primary-color);
-    padding: 8px 15px;
-    font-size: 0.9rem;
-    transition: all 0.3s;
-}
-
-.btn-back:hover {
-    background-color: rgba(142, 68, 173, 0.1);
-    transform: translateX(-5px);
-}
-
-/* Загрузка и ошибки */
-.loading-container,
-.error-container {
-    text-align: center;
-    padding: 40px;
-    margin: 30px auto;
-    max-width: 600px;
-}
-
-.loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid rgba(142, 68, 173, 0.2);
+.spinner {
+    width: 44px;
+    height: 44px;
+    border: 5px solid rgba(111, 75, 255, 0.12);
     border-top-color: var(--primary-color);
     border-radius: 50%;
-    margin: 0 auto 20px;
+    margin: 6px auto 14px;
     animation: spin 1s linear infinite;
 }
 
@@ -364,279 +383,190 @@ export default {
     }
 }
 
-.error-container h2 {
-    color: var(--primary-color);
-    margin-bottom: 15px;
+.post {
+    margin: 0 auto;
+    padding: 26px;
+    border-radius: 12px;
+    max-width: 900px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.00));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
 }
 
-.no-posts {
-    text-align: center;
-    padding: 50px;
-    margin: 50px auto;
-    max-width: 600px;
+.post-head {
+    margin-bottom: 18px;
 }
 
-.welcome-icon {
-    font-size: 3rem;
-    margin-bottom: 20px;
-}
-
-/* Стили для контента поста */
-:deep(.markdown-body) {
+.post-title {
+    margin: 6px 0 8px;
     color: var(--text-color);
-    line-height: 1.6;
-    font-size: 1.05rem;
+    font-size: 1.6rem;
 }
 
-:deep(.markdown-body h1) {
-    font-size: 2rem;
-    margin: 0.8em 0;
-    color: var(--primary-color);
+.post-info {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 12px;
 }
 
-:deep(.markdown-body h2) {
-    font-size: 1.8rem;
-    margin: 1.4em 0 0.8em;
-    color: var(--text-color);
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 0.3em;
+.post-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
 }
 
-:deep(.markdown-body h3) {
-    font-size: 1.5rem;
-    margin: 1.3em 0 0.6em;
-    color: var(--text-color);
-}
-
-:deep(.markdown-body p) {
-    margin: 1em 0;
+.post-body {
+    margin-top: 6px;
     line-height: 1.7;
 }
 
-:deep(.markdown-body a) {
+.post-footer {
+    margin-top: 28px;
+    border-top: 1px solid var(--glass-border);
+    padding-top: 16px;
+}
+
+.btn-back {
+    background: transparent;
     color: var(--primary-color);
-    text-decoration: none;
-    border-bottom: 1px dashed var(--primary-color);
-    transition: all 0.2s;
+    border: 1px solid var(--primary-color);
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
 }
 
-:deep(.markdown-body a:hover) {
-    color: var(--highlight);
-    border-bottom-color: var(--highlight);
+.cards-enter-active,
+.cards-leave-active {
+    transition: all 0.25s;
 }
 
-:deep(.markdown-body img) {
-    max-width: 100%;
-    border-radius: 5px;
-    display: block;
-    margin: 1.5em auto;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+.cards-enter,
+.cards-leave-to {
+    opacity: 0;
+    transform: translateY(6px);
+}
+
+.post-enter-active,
+.post-leave-active {
+    transition: opacity 0.22s, transform 0.22s;
+}
+
+.post-enter,
+.post-leave-to {
+    opacity: 0;
+    transform: translateY(6px);
+}
+
+:deep(.markdown-body) {
+    color: var(--text-color);
+    line-height: 1.7;
+    font-size: 1.02rem;
+}
+
+:deep(.markdown-body h1) {
+    font-size: 1.8rem;
+    color: var(--primary-color);
+    margin: 0.8em 0;
+}
+
+:deep(.markdown-body h2) {
+    font-size: 1.4rem;
+    margin: 1.2em 0 0.6em;
+}
+
+:deep(.markdown-body p) {
+    margin: 0.9em 0;
 }
 
 :deep(.markdown-body pre) {
-    background-color: rgba(0, 0, 0, 0.3);
-    padding: 1.2em;
-    border-radius: 5px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1em;
+    border-radius: 6px;
     overflow-x: auto;
-    margin: 1.5em 0;
-    border: 1px solid var(--border-color);
 }
 
-:deep(.markdown-body code) {
-    font-family: 'Roboto Mono', monospace;
-    background-color: rgba(0, 0, 0, 0.2);
-    padding: 0.2em 0.4em;
-    border-radius: 3px;
-    font-size: 0.9em;
-    border: none;
-    outline: none;
-    text-shadow: none;
-    box-shadow: none;
-}
-
-:deep(.markdown-body pre code) {
-    background-color: transparent;
-    padding: 0;
-    color: inherit;
-    font-size: 0.9em;
-    white-space: pre;
-    word-break: normal;
-    overflow-wrap: normal;
-    border: none;
-    outline: none;
-    text-shadow: none;
-    box-shadow: none;
-    display: block;
-    width: 100%;
-    -webkit-text-fill-color: var(--text-color);
-}
-
-:deep(.markdown-body pre code *) {
-    border: none;
-    outline: none;
-    text-shadow: none;
-    box-shadow: none;
-    background-color: transparent;
-}
-
-:deep(.markdown-body ul),
-:deep(.markdown-body ol) {
-    padding-left: 2em;
-    margin: 1em 0;
-    list-style-position: outside;
-}
-
-:deep(.markdown-body ul li),
-:deep(.markdown-body ol li) {
-    margin-bottom: 0.5em;
-    padding-left: 0.5em;
-    display: list-item;
-}
-
-:deep(.markdown-body li > ul),
-:deep(.markdown-body li > ol) {
-    margin: 0.5em 0;
-    padding-left: 1.5em;
-}
-
-:deep(.markdown-body blockquote) {
-    margin: 1em 0;
-    padding: 0.5em 1em;
-    border-left: 4px solid var(--primary-color);
-    background-color: rgba(0, 0, 0, 0.2);
-}
-
-:deep(.markdown-body table) {
-    width: 100%;
-    margin: 1em 0;
-    border-collapse: collapse;
-}
-
-:deep(.markdown-body table th),
-:deep(.markdown-body table td) {
-    padding: 0.5em;
-    border: 1px solid var(--border-color);
-    text-align: left;
-}
-
-:deep(.markdown-body table th) {
-    background-color: rgba(0, 0, 0, 0.2);
-}
-
-:deep(.markdown-body hr) {
-    border: none;
-    height: 1px;
-    background-color: var(--border-color);
-    margin: 2em 0;
-}
-
-/* Медиазапросы для адаптивности */
-@media (max-width: 1200px) {
-    .blog-grid {
+@media (max-width: 1000px) {
+    .cards-grid {
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     }
+
+    .card {
+        min-height: 200px;
+    }
+
+    .post {
+        padding: 22px;
+    }
 }
 
-@media (max-width: 768px) {
-    .blog-grid {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 15px;
+@media (max-width: 700px) {
+    .container {
+        padding: 0 12px;
     }
 
-    .blog-card,
-    .blog-post {
-        padding: 20px;
+    .cards-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
     }
 
-    .blog-title {
-        font-size: 1.3rem;
+    .search-wrap {
+        max-width: 100%;
+        margin: 10px 0 8px;
+    }
+
+    .card {
+        padding: 16px;
+        min-height: 160px;
+    }
+
+    .card-title {
+        font-size: 1.05rem;
+    }
+
+    .card-desc {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+    }
+
+    .post {
+        padding: 18px;
     }
 
     :deep(.markdown-body) {
-        font-size: 1rem;
-    }
-
-    :deep(.markdown-body h1) {
-        font-size: 1.7rem;
-    }
-
-    :deep(.markdown-body h2) {
-        font-size: 1.5rem;
-    }
-
-    :deep(.markdown-body pre) {
-        padding: 1em;
-    }
-
-    .section-title {
-        font-size: 1.8rem;
-    }
-
-    .blog-search {
-        max-width: 90%;
-    }
-
-    .blog-meta {
-        flex-direction: column;
-        align-items: flex-start;
+        font-size: 0.98rem;
     }
 }
 
-@media (max-width: 480px) {
-
-    .blog-card,
-    .blog-post {
-        padding: 15px;
-    }
-
-    .blog-title {
-        font-size: 1.2rem;
-        margin-bottom: 10px;
-    }
-
-    .blog-description {
-        margin-bottom: 15px;
-        font-size: 0.95rem;
-    }
-
-    .blog-date {
-        margin-bottom: 5px;
+@media (max-width: 420px) {
+    .title {
+        font-size: 1.45rem;
     }
 
     .search-input {
-        padding: 10px 15px;
-        font-size: 0.9rem;
+        padding: 10px 12px;
+        font-size: 0.95rem;
     }
 
-    .post-tags {
-        margin-bottom: 15px;
+    .card {
+        padding: 14px;
     }
 
-    .post-tag {
-        font-size: 0.8rem;
-        padding: 3px 10px;
+    .card-title {
+        font-size: 1rem;
     }
 
-    .loading-container,
-    .error-container,
-    .no-posts {
-        padding: 25px 15px;
+    .btn-read {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+
+    .post {
+        padding: 14px;
     }
 
     :deep(.markdown-body) {
         font-size: 0.95rem;
-    }
-
-    :deep(.markdown-body h1) {
-        font-size: 1.5rem;
-    }
-
-    :deep(.markdown-body h2) {
-        font-size: 1.3rem;
-    }
-
-    :deep(.markdown-body h3) {
-        font-size: 1.2rem;
     }
 }
 </style>

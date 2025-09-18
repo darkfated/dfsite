@@ -1,41 +1,31 @@
-import { createRouter, createWebHistory } from "vue-router"
-import HomeView from "../views/HomeView.vue"
+import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '../views/HomeView.vue'
 
 const routes = [
   {
-    path: "/",
-    name: "home",
+    path: '/',
+    name: 'home',
     component: HomeView,
   },
   {
-    path: "/about",
-    name: "about",
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
+    path: '/about',
+    name: 'about',
+    component: () => import('../views/AboutView.vue'),
   },
   {
-    path: "/portfolio",
-    name: "portfolio",
-    component: () =>
-      import(/* webpackChunkName: "portfolio" */ "../views/PortfolioView.vue"),
+    path: '/contact',
+    name: 'links',
+    component: () => import('../views/ContactView.vue'),
   },
   {
-    path: "/contact",
-    name: "links",
-    component: () =>
-      import(/* webpackChunkName: "contact" */ "../views/ContactView.vue"),
+    path: '/blog',
+    name: 'Blog',
+    component: () => import('../views/BlogView.vue'),
   },
   {
-    path: "/blog",
-    name: "Blog",
-    component: () =>
-      import(/* webpackChunkName: "blog" */ "../views/BlogView.vue"),
-  },
-  {
-    path: "/blog/:slug",
-    name: "BlogPost",
-    component: () =>
-      import(/* webpackChunkName: "blog" */ "../views/BlogView.vue"),
+    path: '/blog/:slug',
+    name: 'BlogPost',
+    component: () => import('../views/BlogView.vue'),
   },
 ]
 

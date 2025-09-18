@@ -4,10 +4,8 @@
             <div class="container">
                 <div class="hero-content">
                     <h1 class="hero-title">Привет, я <span class="accent">DarkFated</span></h1>
-                    <p class="hero-subtitle">Занимаюсь программированием, медиа<br>А также люблю в свободное время
-                        поиграть в компьютерные игры.</p>
+                    <p class="hero-subtitle">Знаток во всём, но понемногу</p>
                     <div class="hero-buttons">
-                        <router-link to="/portfolio" class="btn btn-primary">Моё портфолио</router-link>
                         <router-link to="/contact" class="btn btn-accent">Мои ссылки</router-link>
                     </div>
                 </div>
@@ -25,8 +23,8 @@
                     <div class="about-preview-icon">🧩</div>
                     <h2 class="about-preview-title">Создаю <span class="text-accent">современные</span> решения</h2>
                     <p class="about-preview-text">
-                        Разрабатываю backend и frontend системы, а также аддоны для Garry's Mod.
-                        Живу, чтобы творить и саморазвиваться.
+                        Являюсь backend-разработчиком и медиа создателем. Обычном пишу код на Golang и Python. Также
+                        разрабатываю аддоны для Garry's Mod
                     </p>
                     <router-link to="/about" class="about-preview-link">Узнать больше обо мне <i
                             class="fas fa-arrow-right"></i></router-link>
@@ -42,10 +40,6 @@ import { mapGetters } from 'vuex'
 export default {
     name: 'HomeView',
     computed: {
-        ...mapGetters(['getPortfolioItems', 'getSkills']),
-        recentWorks() {
-            return this.getPortfolioItems.slice(0, 3)
-        },
         skills() {
             return this.getSkills
         }

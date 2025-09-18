@@ -1,25 +1,17 @@
 <template>
     <footer class="footer">
-        <div class="footer-waves">
-            <div class="wave wave-1"></div>
-            <div class="wave wave-2"></div>
-            <div class="wave wave-3"></div>
-        </div>
-
         <div class="container">
             <div class="footer-top">
-                <div class="footer-brand">
-                    <div class="logo-container">
+                <div class="footer-brand glass">
+                    <div class="logo-row">
                         <img src="@/assets/images/darkfated.jpeg" alt="DarkFated Logo" class="footer-logo-img" />
-                        <h2 class="footer-logo-text">Dark<span class="accent">Fated</span></h2>
+                        <div class="brand-text">
+                            <h2 class="footer-logo-text">Dark<span class="accent">Fated</span></h2>
+                            <p class="footer-tagline">Программирование • Медиа • Творчество</p>
+                        </div>
                     </div>
-                    <p class="footer-tagline">Программирование • Медиа • Творчество</p>
 
                     <div class="footer-social">
-                        <a href="https://github.com/darkfated" target="_blank" rel="noopener noreferrer"
-                            class="social-link" aria-label="GitHub">
-                            <img src="@/assets/svg/github.svg" alt="GitHub" class="social-icon" />
-                        </a>
                         <a href="https://t.me/darkfated_group" target="_blank" rel="noopener noreferrer"
                             class="social-link" aria-label="Telegram">
                             <img src="@/assets/svg/telegram.svg" alt="Telegram" class="social-icon" />
@@ -28,35 +20,30 @@
                             class="social-link" aria-label="YouTube">
                             <img src="@/assets/svg/youtube.svg" alt="YouTube" class="social-icon" />
                         </a>
-                        <a href="https://steamcommunity.com/id/darkfated/" target="_blank" rel="noopener noreferrer"
-                            class="social-link" aria-label="Steam">
-                            <img src="@/assets/svg/steam.svg" alt="Steam" class="social-icon" />
-                        </a>
                     </div>
                 </div>
 
-                <div class="footer-nav">
-                    <div class="footer-nav-group">
-                        <h3 class="footer-heading">Навигация</h3>
-                        <ul class="footer-links">
-                            <li><router-link to="/" class="footer-link">Главная</router-link></li>
-                            <li><router-link to="/about" class="footer-link">Обо мне</router-link></li>
-                            <li><router-link to="/portfolio" class="footer-link">Портфолио</router-link></li>
-                            <li><router-link to="/blog" class="footer-link">Блог</router-link></li>
-                            <li><router-link to="/contact" class="footer-link">Ссылки</router-link></li>
-                        </ul>
-                    </div>
+                <div class="footer-nav glass">
+                    <div class="nav-grid">
+                        <div class="footer-nav-group">
+                            <h3 class="footer-heading">Навигация</h3>
+                            <ul class="footer-links">
+                                <li><router-link to="/" class="footer-link">Главная</router-link></li>
+                                <li><router-link to="/about" class="footer-link">Обо мне</router-link></li>
+                                <li><router-link to="/blog" class="footer-link">Блог</router-link></li>
+                                <li><router-link to="/contact" class="footer-link">Ссылки</router-link></li>
+                            </ul>
+                        </div>
 
-                    <div class="footer-nav-group">
-                        <h3 class="footer-heading">Категории</h3>
-                        <ul class="footer-links">
-                            <li><router-link to="/portfolio?cat=garrysmod" class="footer-link">Garry's Mod</router-link>
-                            </li>
-                            <li><router-link to="/portfolio?cat=backend" class="footer-link">Backend</router-link></li>
-                            <li><router-link to="/portfolio?cat=frontend" class="footer-link">Frontend</router-link>
-                            </li>
-                            <li><router-link to="/blog" class="footer-link">Статьи блога</router-link></li>
-                        </ul>
+                        <div class="footer-nav-group">
+                            <h3 class="footer-heading">Контакты</h3>
+                            <ul class="footer-links">
+                                <li><a href="https://t.me/darkfated_group" target="_blank" rel="noopener noreferrer"
+                                        class="footer-link">Telegram</a></li>
+                                <li><a href="https://www.youtube.com/@darkfated" target="_blank"
+                                        rel="noopener noreferrer" class="footer-link">YouTube</a></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -65,7 +52,7 @@
                 <div class="copyright">
                     <p>&copy; {{ currentYear }} DarkFated. Все права защищены.</p>
                 </div>
-                <div class="back-to-top" @click="scrollToTop">
+                <div class="back-to-top" @click="scrollToTop" role="button" tabindex="0" @keydown.enter="scrollToTop">
                     <span class="arrow-up">↑</span>
                     <span class="top-text">Наверх</span>
                 </div>
@@ -84,105 +71,84 @@ export default {
     },
     methods: {
         scrollToTop() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+            window.scrollTo({ top: 0, behavior: 'smooth' })
         }
     }
 }
 </script>
 
 <style scoped>
+:root {
+    --dark-bg: #0f1224;
+    --card-bg: rgba(255, 255, 255, 0.02);
+    --glass-border: rgba(255, 255, 255, 0.06);
+    --primary-color: #6f4bff;
+    --accent-color: #7cf2d6;
+    --text-color: #dbe5ff;
+    --light-text: #b9c6e8;
+    --glass-shadow: 0 12px 40px rgba(6, 7, 14, 0.6);
+    --glass-blur: 10px;
+}
+
 .footer {
     position: relative;
     color: var(--text-color);
-    padding: 80px 0 20px;
+    padding: 56px 0 28px;
     margin-top: auto;
     overflow: hidden;
     background: linear-gradient(180deg, rgba(10, 10, 10, 0) 0%, rgba(10, 10, 10, 1) 100%);
 }
 
-/* Волны */
-.footer-waves {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100px;
-    z-index: -1;
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 16px;
+    position: relative;
+    z-index: 2;
 }
 
-.wave {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100px;
-    background-size: 1000px 100px;
-}
-
-.wave-1 {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z' opacity='.25' fill='%232c2c2c'/%3E%3Cpath d='M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z' opacity='.5' fill='%232c2c2c'/%3E%3Cpath d='M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z' fill='%232c2c2c'/%3E%3C/svg%3E");
-    animation: wave-animation 20s linear infinite;
-}
-
-.wave-2 {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z' fill='%23202020'/%3E%3C/svg%3E");
-    animation: wave-animation 15s linear infinite reverse;
-    opacity: 0.8;
-}
-
-.wave-3 {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,0V7.23C0,65.52,268.63,112.77,600,112.77S1200,65.52,1200,7.23V0Z' fill='%23151515'/%3E%3C/svg%3E");
-    animation: wave-animation 30s linear infinite;
-    opacity: 0.9;
-}
-
-@keyframes wave-animation {
-    0% {
-        background-position-x: 0;
-    }
-
-    100% {
-        background-position-x: 1000px;
-    }
-}
-
-/* Верхний блок футера */
 .footer-top {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    padding-bottom: 40px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    margin-bottom: 20px;
+    gap: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 18px;
 }
 
 .footer-brand {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    padding: 18px;
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.015), rgba(255, 255, 255, 0.01));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    backdrop-filter: blur(var(--glass-blur));
 }
 
-.logo-container {
+.logo-row {
     display: flex;
     align-items: center;
-    margin-bottom: 15px;
+    gap: 12px;
 }
 
 .footer-logo-img {
-    width: 42px;
-    height: 42px;
-    margin-right: 10px;
-    border-radius: 25%;
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
 }
 
 .footer-logo-text {
-    font-size: 2rem;
+    font-size: 1.6rem;
     margin: 0;
     font-weight: 700;
-    letter-spacing: 0.5px;
 }
 
 .accent {
@@ -190,60 +156,76 @@ export default {
 }
 
 .footer-tagline {
-    margin: 0 0 25px;
+    margin: 4px 0 12px;
     color: var(--light-text);
-    font-size: 1.1rem;
-    letter-spacing: 0.5px;
+    font-size: 0.95rem;
 }
 
 .footer-social {
     display: flex;
-    gap: 15px;
+    gap: 12px;
+    margin-top: 6px;
 }
 
 .social-link {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 42px;
-    height: 42px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 50%;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    transition: transform 0.18s, box-shadow 0.18s, background 0.18s;
 }
 
 .social-icon {
     width: 20px;
     height: 20px;
-    filter: brightness(0) invert(0.7);
-    transition: all 0.3s ease;
+    filter: brightness(0) invert(0.78);
+    transition: filter 0.18s;
 }
 
 .social-link:hover {
-    background: var(--primary-color);
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(142, 68, 173, 0.3);
+    transform: translateY(-6px);
+    background: linear-gradient(90deg, rgba(111, 75, 255, 0.14), rgba(124, 242, 214, 0.06));
+    box-shadow: 0 14px 40px rgba(111, 75, 255, 0.08);
 }
 
 .social-link:hover .social-icon {
     filter: brightness(0) invert(1);
 }
 
-/* Навигация */
 .footer-nav {
+    padding: 18px;
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.015), rgba(255, 255, 255, 0.01));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    display: flex;
+    align-items: stretch;
+    backdrop-filter: blur(var(--glass-blur));
+}
+
+.nav-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+    width: 100%;
+}
+
+.footer-nav-group {
+    display: flex;
+    flex-direction: column;
 }
 
 .footer-heading {
     color: var(--primary-color);
-    font-size: 1.2rem;
-    margin: 0 0 20px;
+    font-size: 1rem;
+    margin: 0 0 10px;
     font-weight: 600;
+    padding-bottom: 8px;
     position: relative;
-    padding-bottom: 12px;
 }
 
 .footer-heading::after {
@@ -251,7 +233,7 @@ export default {
     position: absolute;
     left: 0;
     bottom: 0;
-    width: 30px;
+    width: 34px;
     height: 2px;
     background: var(--primary-color);
 }
@@ -260,46 +242,30 @@ export default {
     list-style: none;
     padding: 0;
     margin: 0;
-}
-
-.footer-links li {
-    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .footer-link {
     color: var(--light-text);
     font-size: 0.95rem;
-    transition: all 0.3s ease;
-    display: inline-block;
-    position: relative;
-    padding-left: 0;
-}
-
-.footer-link::before {
-    content: '→';
-    margin-right: 8px;
-    opacity: 0;
-    transform: translateX(-10px);
-    display: inline-block;
-    transition: all 0.3s ease;
+    text-decoration: none;
+    transition: color 0.18s, transform 0.18s;
 }
 
 .footer-link:hover {
     color: var(--primary-color);
-    transform: translateX(5px);
+    transform: translateX(6px);
 }
 
-.footer-link:hover::before {
-    opacity: 1;
-    transform: translateX(0);
-}
-
-/* Нижняя часть футера */
 .footer-bottom {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 12px;
     flex-wrap: wrap;
+    padding-top: 8px;
 }
 
 .copyright {
@@ -308,109 +274,109 @@ export default {
 }
 
 .back-to-top {
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    gap: 8px;
     cursor: pointer;
-    padding: 8px 15px;
-    background: rgba(142, 68, 173, 0.1);
-    border-radius: 20px;
-    transition: all 0.3s ease;
+    padding: 8px 14px;
+    background: rgba(111, 75, 255, 0.08);
+    border-radius: 999px;
+    transition: transform 0.16s, box-shadow 0.16s;
+    user-select: none;
 }
 
 .arrow-up {
-    font-size: 1.2rem;
-    margin-right: 5px;
-    transition: transform 0.3s ease;
+    font-size: 1.1rem;
+    color: var(--primary-color);
 }
 
 .top-text {
-    font-size: 0.9rem;
+    color: var(--text-color);
+    font-weight: 600;
 }
 
 .back-to-top:hover {
-    background: rgba(142, 68, 173, 0.2);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 36px rgba(111, 75, 255, 0.08);
 }
 
-.back-to-top:hover .arrow-up {
-    transform: translateY(-3px);
+.glass {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.015), rgba(255, 255, 255, 0.01));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    backdrop-filter: blur(var(--glass-blur));
+    border-radius: 12px;
 }
 
-/* Адаптивность */
 @media (max-width: 992px) {
     .footer-top {
         grid-template-columns: 1fr;
-        gap: 30px;
     }
 
-    .footer-nav {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    }
-}
-
-@media (max-width: 768px) {
-    .footer {
-        padding-top: 60px;
+    .nav-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 
-    .footer-brand,
-    .footer-nav-group {
+    .footer-brand {
         align-items: center;
         text-align: center;
     }
 
-    .footer-links li {
-        text-align: center;
+    .logo-row {
+        justify-content: center;
     }
 
-    .footer-link {
-        text-align: center;
-        padding-left: 0;
+    .brand-text {
+        align-items: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 0 12px;
     }
 
-    .footer-link::before {
-        display: none;
+    .nav-grid {
+        grid-template-columns: 1fr;
     }
 
-    .footer-link:hover {
-        transform: translateY(-3px);
+    .footer-nav {
+        padding: 14px;
     }
 
-    .footer-heading::after {
-        left: 50%;
-        transform: translateX(-50%);
+    .footer-logo-text {
+        font-size: 1.4rem;
+    }
+
+    .footer-tagline {
+        font-size: 0.95rem;
+    }
+
+    .social-link {
+        width: 40px;
+        height: 40px;
     }
 
     .footer-bottom {
         flex-direction: column;
-        gap: 15px;
+        align-items: center;
+        gap: 10px;
         text-align: center;
-    }
-
-    .back-to-top {
-        margin: 0 auto;
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 420px) {
+    .footer {
+        padding: 46px 0 18px;
+    }
+
     .footer-logo-text {
-        font-size: 1.8rem;
-    }
-
-    .footer-tagline {
-        font-size: 1rem;
-    }
-
-    .footer-social {
-        gap: 10px;
+        font-size: 1.2rem;
     }
 
     .social-link {
-        width: 38px;
-        height: 38px;
-    }
-
-    .footer-nav {
-        gap: 25px;
+        width: 36px;
+        height: 36px;
     }
 }
 </style>

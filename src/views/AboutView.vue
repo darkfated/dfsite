@@ -1,78 +1,53 @@
 <template>
     <div class="about">
-        <section class="section about-hero">
+        <section class="hero">
             <div class="container">
-                <h1 class="section-title">Обо мне</h1>
-                <p class="section-subtitle">Немного информации о том, кто я и чем занимаюсь</p>
+                <h1 class="title">Обо мне</h1>
+                <p class="subtitle">Кем я являюсь?</p>
 
-                <div class="about-content glass-card">
-                    <div class="about-text">
-                        <h2>🖥️ Разработчик</h2>
-                        <p>Привет! Меня зовут DarkFated, я программирую на Go, а также знаком с Python. Выбрал профессию
-                            backend-разработчика, потому что люблю алгоритмы и низкий уровень понимания языка</p>
-                        <p>Также увлекаюсь фронтом, на нём пишу свои проекты, а также участвую в разработке
-                            информационных систем у других</p>
-                        <p>Кроме этого, с детства занимаюсь моддингом в играх на языке Lua. Это и SAMP, и Garry's Mod
-                            (до сих пор)</p>
-                        <p>Знаток во всём, но понемногу. Поэтому стремлюсь к большему!</p>
-                    </div>
-                    <div class="about-decoration">
-                        <div class="about-shape"></div>
-                    </div>
+                <div class="card glass">
+                    <h2>Разработчик</h2>
+                    <p>Создаю backend-микросервисы на Golang и Python. Поддерживаю архитектуру, пишу техническую
+                        документацию, занимаюсь DevOps и проектированием.</p>
+                    <p>Интересуюсь моддингом в играх: Garry's Mod, Unturned, CS2, Rust, s&box.</p>
                 </div>
 
-                <div class="about-content glass-card">
-                    <div class="about-text">
-                        <h2>📱 Медиа</h2>
-                        <p>Занимаюсь ютуб-деятельностью, где количество подписчиков насчитывает свыше двух тысяч</p>
-                        <p>Также развиваю Telegram канал с 300+ подписчиков, где делюсь контентом от своей личной жизни
-                            до игр и кодинга</p>
-                        <p>В свободное время люблю заниматься этим и дарить полезный контент зрителям.</p>
-                    </div>
-                    <div class="about-decoration">
-                        <div class="about-shape media-shape"></div>
-                    </div>
+                <div class="card glass">
+                    <h2>Медиа</h2>
+                    <p>Веду YouTube-канал и Telegram-канал. Публикую обучающий и развлекательный контент, делюсь опытом
+                        и идеями.</p>
                 </div>
             </div>
         </section>
 
-        <section class="section skills-section">
+        <section class="skills">
             <div class="container">
                 <h2 class="section-title">Мои знания</h2>
 
-                <div class="tech-stack grid three-column">
-                    <div class="tech-category glass-card">
-                        <h3 class="tech-title">👨‍💻 Языки программирования</h3>
-                        <ul class="tech-list">
-                            <li>Golang</li>
-                            <li>Python</li>
-                            <li>C#</li>
-                            <li>C++</li>
-                            <li>JavaScript</li>
-                            <li>Lua</li>
-                            <li>HTML/CSS</li>
-                        </ul>
+                <div class="skills-grid">
+                    <div class="skill-card glass">
+                        <h3>Языки</h3>
+                        <div class="chips">
+                            <span v-for="(lang, i) in languages" :key="i" class="chip">{{ lang }}</span>
+                        </div>
                     </div>
 
-                    <div class="tech-category glass-card">
-                        <h3 class="tech-title">🛠️ Фреймворки и инструменты</h3>
-                        <ul class="tech-list">
-                            <li><strong>Go:</strong> Gin, Beego</li>
-                            <li><strong>Python:</strong> Django, FastAPI, Flask, Pytest</li>
-                            <li><strong>C#/C++:</strong> Qt6, WPF, ASP.NET, Entity Framework</li>
-                            <li><strong>Frontend:</strong> Vue.js, React</li>
-                            <li><strong>DevOps:</strong> Docker, Nginx, CMake</li>
-                        </ul>
+                    <div class="skill-card glass">
+                        <h3>Фреймворки и инструменты</h3>
+                        <div class="list">
+                            <div class="item"><strong>Go:</strong> Gin, Beego</div>
+                            <div class="item"><strong>Python:</strong> FastAPI, Django, Flask</div>
+                            <div class="item"><strong>Frontend:</strong> Vue.js</div>
+                            <div class="item"><strong>DevOps:</strong> Docker, Nginx, Kubernetes</div>
+                            <div class="item"><strong>Тестирование:</strong> Pytest, Testify</div>
+                        </div>
                     </div>
 
-                    <div class="tech-category glass-card">
-                        <h3 class="tech-title">🗄️ Базы данных</h3>
-                        <ul class="tech-list">
-                            <li>MySQL</li>
-                            <li>PostgreSQL</li>
-                            <li>SQLite</li>
-                            <li>MongoDB</li>
-                        </ul>
+                    <div class="skill-card glass">
+                        <h3>Базы данных и очереди</h3>
+                        <div class="chips">
+                            <span v-for="(db, i) in databases" :key="i" class="chip">{{ db }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -82,180 +57,232 @@
 
 <script>
 export default {
-    name: 'AboutView'
+    name: 'AboutView',
+    data() {
+        return {
+            languages: ['Golang', 'Python', 'C#', 'C++', 'JavaScript', 'Lua', 'HTML/CSS'],
+            databases: ['PostgreSQL', 'MySQL', 'SQLite', 'MongoDB', 'Redis', 'ClickHouse', 'Kafka', 'RabbitMQ']
+        }
+    }
 }
 </script>
 
 <style scoped>
-.about-hero {
-    background-color: var(--dark-bg);
-    text-align: center;
-    padding-bottom: 40px;
+:root {
+    --dark-bg: #0f1224;
+    --card-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.06);
+    --primary-color: #6f4bff;
+    --text-color: #dbe5ff;
+    --muted: #9aa7c7;
+    --glass-shadow: 0 8px 30px rgba(7, 8, 15, 0.6);
+    --glass-blur: 10px;
 }
 
-.about-content {
-    padding: 40px;
-    margin-bottom: 40px;
-    position: relative;
-    display: flex;
-    border-radius: 12px;
+.about {
+    min-height: 100vh;
+    background: linear-gradient(180deg, rgba(12, 13, 20, 1) 0%, rgba(18, 19, 32, 1) 100%);
+    color: var(--text-color);
+    padding: 36px 16px;
+    font-family: Inter, "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-.about-text {
-    flex: 1;
-    position: relative;
-    z-index: 2;
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 14px;
 }
 
-.about-text h2 {
-    color: var(--primary-color);
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 1.8rem;
-}
-
-.about-text p {
-    margin-bottom: 20px;
-    line-height: 1.6;
+.title {
+    font-size: 2.1rem;
+    margin: 2px 0 6px;
+    letter-spacing: -0.02em;
     color: var(--text-color);
 }
 
-.about-decoration {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 40%;
-    overflow: hidden;
-    z-index: 1;
+.subtitle {
+    color: var(--muted);
+    margin: 0 0 18px;
 }
 
-.about-shape {
-    position: absolute;
-    top: -50%;
-    right: -50%;
-    width: 150%;
-    height: 200%;
-    background: radial-gradient(ellipse at center, rgba(142, 68, 173, 0.1) 0%, transparent 70%);
-    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-    transform: rotate(45deg);
+.hero {
+    padding: 12px 0 28px;
 }
 
-.media-shape {
-    background: radial-gradient(ellipse at center, rgba(231, 76, 60, 0.1) 0%, transparent 70%);
-    transform: rotate(-45deg);
-}
-
-.tech-category {
-    padding: 30px;
+.card {
+    padding: 18px;
     border-radius: 12px;
-    transition: transform 0.3s, box-shadow 0.3s;
+    margin-bottom: 16px;
+    line-height: 1.6;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
-.tech-category:hover {
-    transform: translateY(-5px);
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 40px rgba(5, 6, 12, 0.6);
 }
 
-.tech-title {
+.card h2 {
+    margin: 0 0 8px;
     color: var(--primary-color);
-    margin-bottom: 20px;
-    font-size: 1.3rem;
-    text-align: center;
+    font-size: 1.05rem;
+}
+
+.card p {
+    margin: 0 0 10px;
+    color: var(--text-color);
+    font-size: 0.98rem;
+}
+
+.glass {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+}
+
+.skills {
+    padding-bottom: 30px;
+}
+
+.section-title {
+    margin: 12px 0 14px;
+    font-size: 1.4rem;
+    color: var(--text-color);
+}
+
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.skill-card {
+    padding: 16px;
+    border-radius: 12px;
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.skill-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 18px 50px rgba(15, 12, 40, 0.6);
+}
+
+.chips {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
 }
 
-.tech-list {
-    padding-left: 20px;
-    margin: 0;
-    line-height: 1.8;
+.chip {
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    color: var(--text-color);
+    font-size: 0.9rem;
+    box-shadow: 0 6px 18px rgba(7, 8, 15, 0.45);
+    white-space: nowrap;
 }
 
-.tech-list li {
-    margin-bottom: 8px;
-    color: var(--light-text);
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+    color: var(--text-color);
+    font-size: 0.95rem;
 }
 
-.tech-list strong {
+.item strong {
     color: var(--primary-color);
+    margin-right: 6px;
+    font-weight: 700;
 }
 
-@media (max-width: 768px) {
-    .about-content {
-        padding: 25px;
-        flex-direction: column;
-        position: relative;
-        overflow: hidden;
+/* Адаптив: планшет */
+@media (max-width: 1000px) {
+    .skills-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 
-    .about-decoration {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        right: 0;
-        margin-top: 0;
-        z-index: 1;
+    .title {
+        font-size: 1.95rem;
     }
 
-    .about-shape {
-        position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 150%;
-        height: 200%;
-    }
-
-    .about-text {
-        position: relative;
-        z-index: 2;
-    }
-
-    .tech-category {
-        padding: 25px;
-    }
-
-    .tech-title {
-        font-size: 1.2rem;
-    }
-
-    .tech-list {
-        padding-left: 15px;
-    }
-
-    .tech-list li {
-        margin-bottom: 6px;
-        font-size: 0.95rem;
+    .card {
+        padding: 16px;
     }
 }
 
-@media (max-width: 480px) {
-    .about-content {
-        padding: 20px;
+/* Адаптив: мобильный */
+@media (max-width: 600px) {
+    .about {
+        padding: 20px 12px;
     }
 
-    .about-text h2 {
-        font-size: 1.5rem;
-        margin-bottom: 15px;
+    .container {
+        padding: 0 10px;
     }
 
-    .about-text p {
+    .title {
+        font-size: 1.6rem;
+    }
+
+    .subtitle {
         font-size: 0.95rem;
-        margin-bottom: 15px;
+        margin-bottom: 12px;
     }
 
-    .tech-category {
-        padding: 20px;
+    .card {
+        padding: 14px;
+        border-radius: 10px;
     }
 
-    .tech-title {
-        font-size: 1.1rem;
+    .card h2 {
+        font-size: 1rem;
     }
 
-    .tech-list li {
+    .card p {
+        font-size: 0.95rem;
+    }
+
+    .skills-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .chip {
+        padding: 7px 10px;
+        font-size: 0.88rem;
+    }
+
+    .list {
+        font-size: 0.92rem;
+    }
+}
+
+/* Маленькие экраны */
+@media (max-width: 380px) {
+    .title {
+        font-size: 1.45rem;
+    }
+
+    .subtitle {
         font-size: 0.9rem;
+    }
+
+    .card p {
+        font-size: 0.9rem;
+    }
+
+    .chip {
+        font-size: 0.82rem;
+        padding: 6px 8px;
     }
 }
 </style>
