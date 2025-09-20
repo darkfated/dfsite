@@ -26,7 +26,7 @@
 
 1. Клонировать репозиторий:
 
-```
+```bash
 git clone https://github.com/darkfated/dfsite.git
 cd dfsite
 ```
